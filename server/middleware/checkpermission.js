@@ -1,7 +1,7 @@
 const { UserProject } = require("../model/user-project");
 const { Interface } = require("../model/interface");
 
-// 验证权限
+// 权限验证
 module.exports = (type) => {
   return async (req, res, next) => {
     // 从req.body或者req.params中获取projectId
@@ -10,16 +10,16 @@ module.exports = (type) => {
     // 如果有interfaceId，根据interfaceId的projectId进行判断
     try {
       if (interfaceId) {
-        const interface = await Interface.findById(interfaceId).select(
+        const interfaceTarget = await Interface.findById(interfaceId).select(
           "projectId"
         );
-        if (!interface) {
+        if (!interfaceTarget) {
           return res.status(400).json({
             code: 400,
             msg: "接口不存在",
           });
         }
-        projectId = interface.projectId._id;
+        projectId = interfaceTarget.projectId._id;
       }
     } catch (err) {
       next(err);
@@ -39,7 +39,7 @@ module.exports = (type) => {
         } else {
           res.status(403).json({
             code: 403,
-            msg: "您没有权限",
+            msg: "您权限不足",
           });
         }
       })

@@ -10,19 +10,19 @@ module.exports = function (req, res, next) {
   if (!token) {
     return res.status(401).json({
       code: 401,
-      msg: "无Token!",
+      msg: "请求头中Token不存在!",
     });
   }
   // 如果token存在,验证token
   try {
-    const userData = jwt.verify(token, config.secret);
+    const verifyData = jwt.verify(token, config.secret);
     // 如果验证成功,将用户信息挂载到req上
-    req.userData = userData;
+    req.userData = verifyData;
     next();
   } catch (err) {
     return res.status(401).json({
       code: 401,
-      msg: "Token无效!",
+      msg: "Token存在，但是无效!",
     });
   }
 };

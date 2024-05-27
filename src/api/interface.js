@@ -1,6 +1,5 @@
 import request from "./request";
 
-// 创建接口
 export function createInterface(data) {
   return request({
     url: "/api/interface",
@@ -9,7 +8,6 @@ export function createInterface(data) {
   });
 }
 
-// 批量创建接口
 export function batchCreateInterface(data) {
   return request({
     url: "/api/interface/batch",
@@ -18,7 +16,6 @@ export function batchCreateInterface(data) {
   });
 }
 
-// 获取指定项目的所有接口
 export function getInterfaces(projectId) {
   return request({
     url: `/api/interface/project/${projectId}`,
@@ -26,7 +23,7 @@ export function getInterfaces(projectId) {
   });
 }
 
-// 获取指定接口
+// 根据id获取指定接口
 export function getInterface(interfaceId) {
   return request({
     url: `/api/interface/${interfaceId}`,

@@ -5,27 +5,23 @@ const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
 
 // 定义project结构
-const projectSchema = new mongoose.Schema({
-  // 项目名称
+const interfaceStruct = new mongoose.Schema({
   name: {
     type: String,
     required: true,
     minlength: 2,
     maxlength: 15,
   },
-  // 项目描述
   description: {
     type: String,
     minlength: 2,
     maxlength: 500,
   },
-  // 项目创建者
   creator: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
-  // 项目成员
   members: {
     type: [
       {
@@ -35,17 +31,14 @@ const projectSchema = new mongoose.Schema({
     ],
     select: false,
   },
-  // 项目创建时间
   createTime: {
     type: Date,
     default: Date.now,
   },
-  // 接口数量
   interfaceCount: {
     type: Number,
     default: 0,
   },
-  // 项目接口
   interfaces: {
     type: [
       {
@@ -55,17 +48,16 @@ const projectSchema = new mongoose.Schema({
     ],
     select: false,
   },
-  // 隐藏版本信息
   __v: {
     type: Number,
     select: false,
   },
 });
 
-// 创建Model
-const Project = mongoose.model("Project", projectSchema);
 
-// 创建项目规则校验规则
+const Project = mongoose.model("Project", interfaceStruct);
+
+// 创建校验规则
 function projectValidator(data) {
   const schema = Joi.object({
     name: Joi.string().trim().min(2).max(15).required().messages({
@@ -88,7 +80,7 @@ function projectValidator(data) {
   return schema.validate(data);
 }
 
-// 修改项目规则校验规则
+// 更新校验规则
 function updateProjectValidator(data) {
   const schema = Joi.object({
     name: Joi.string().trim().min(2).max(15).required().messages({
@@ -104,7 +96,7 @@ function updateProjectValidator(data) {
   return schema.validate(data);
 }
 
-// 导出
+
 module.exports = {
   Project,
   projectValidator,

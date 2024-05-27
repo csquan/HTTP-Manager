@@ -52,14 +52,14 @@ import { useDark, useToggle } from "@vueuse/core";
 
 const isDark = useDark();
 const darkMode = ref(isDark.value);
-const toggleDark = useToggle(isDark);
+const toggleViewMode = useToggle(isDark);
 
 const toggleDarkMode = () => {
   ElMessage({
-    message: darkMode.value ? "夜间模式" : "白天模式",
+    message: darkMode.value ? "夜间模式" : "日间模式",
     type: "success",
   });
-  toggleDark();
+  toggleViewMode();
 };
 
 const clickLogo = () => {
@@ -67,10 +67,8 @@ const clickLogo = () => {
 };
 const handleDropdownCommand = (command) => {
   if (command === "profile") {
-    // 跳转到个人资料页面
     router.push("/my");
   } else if (command === "logout") {
-    // 处理退出登录的点击事件
     store.clearToken();
     request.defaults.headers.common["Authorization"] = "";
     localStorage.setItem("token", "");

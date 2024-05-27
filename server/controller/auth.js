@@ -8,7 +8,7 @@ const bcrypt = require("bcrypt");
 exports.login = async (req, res, next) => {
   try {
     // 获取到校验后的数据
-    const validValue = req.validValue;
+    const value = req.validValue;
     // 1.检测用户是否存在
     let user = await User.findOne({ email: validValue.email }).select(
       "+password"
@@ -21,9 +21,9 @@ exports.login = async (req, res, next) => {
       });
     }
     // 3.如果用户存在，检测密码是否正确
-    const isValid = await bcrypt.compare(validValue.password, user.password);
+    const Valid = await bcrypt.compare(value.password, user.password);
     // 4.如果密码不正确，返回错误信息
-    if (!isValid) {
+    if (!Valid) {
       return res.status(400).json({
         code: 400,
         msg: "用户名或密码错误!",

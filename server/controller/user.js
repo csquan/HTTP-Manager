@@ -3,33 +3,32 @@ const bcrypt = require("bcrypt");
 
 const { User } = require("../model/user");
 
-// 注册用户
+// 注册
 exports.register = async (req, res, next) => {
   try {
     let { email, password, name } = req.validValue;
-    // 1. 判断邮箱是否已经注册
+    // 1. 判断邮箱是否已经被注册
     let user = await User.findOne({ email });
-    // 2. 如果邮箱已经注册，返回错误信息
+    // 2. 如果邮箱已经被注册，返回错误信息
     if (user) {
       return res.status(400).json({
+        msg: "邮箱已经被注册!",
         code: 400,
-        msg: "邮箱已经注册!",
         data: { email },
       });
     }
-    // 3. 如果邮箱没有注册，注册新用户
-    // 3.1 加密
+    // 3. 注册新用户
     const salt = await bcrypt.genSalt(10);
     password = await bcrypt.hash(password, salt);
-    // 3.2 创建用户
+
     user = await User.create({
       email,
       password,
       name,
     });
-    // 3.3 进行数据存储
+
     await user.save();
-    // 3.4 返回响应
+
     res.status(200).json({
       code: 200,
       msg: "注册成功!",
@@ -40,7 +39,7 @@ exports.register = async (req, res, next) => {
   }
 };
 
-// 获取指定用户
+// 查询指定用户
 exports.getUser = async (req, res, next) => {
   try {
     let userId = req.params.id;
@@ -53,7 +52,7 @@ exports.getUser = async (req, res, next) => {
     }
     res.status(200).json({
       code: 200,
-      msg: "获取用户成功!",
+      msg: "查询用户成功!",
       data: user,
     });
   } catch (err) {
@@ -64,23 +63,24 @@ exports.getUser = async (req, res, next) => {
 // 修改指定用户
 exports.updateUser = async (req, res, next) => {
   try {
-    let userId = req.params.id;
     let body = req.body;
+    let id = req.params.id;
+
     const salt = await bcrypt.genSalt(10);
     body.password = await bcrypt.hash(body.password, salt);
-    // 1. 查找用户
-    const data = await User.findByIdAndUpdate(userId, body);
-    // 2. 如果用户不存在，返回错误信息
+
+    const data = await User.findByIdAndUpdate(id, body);
+
     if (!data) {
       return res.status(400).json({
-        code: 400,
         msg: "用户不存在!",
+        code: 400,
       });
     }
-    // 3. 更新成功
+
     res.status(200).json({
+      msg: "修改用户成功!",
       code: 200,
-      msg: "更新用户成功!",
       data: req.body,
     });
   } catch (err) {
@@ -88,36 +88,36 @@ exports.updateUser = async (req, res, next) => {
   }
 };
 
-// 删除指定用户
+// 删除用户
 exports.deleteUser = async (req, res, next) => {
   try {
-    let userId = req.params.id;
-    // 如果id格式不正确，返回错误信息
-    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+    let id = req.params.id;
+    // 格式校验
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({
-        code: 400,
         msg: "用户id格式不正确!",
+        code: 400,
         value: {
-          _id: userId,
+          _id: id,
         },
       });
     }
-    // 1. 查找用户并删除
-    const user = await User.findByIdAndDelete(userId);
-    // 2. 如果用户不存在，返回错误信息
+
+    const user = await User.findByIdAndDelete(id);
+
     if (!user) {
       return res.status(400).json({
-        code: 400,
         msg: "用户不存在!",
+        code: 400,
         value: {
-          _id: userId,
+          _id: id,
         },
       });
     }
-    // 3. 删除成功
+
     res.status(200).json({
-      code: 200,
       msg: "删除用户成功!",
+      code: 200,
       data: user,
     });
   } catch (err) {

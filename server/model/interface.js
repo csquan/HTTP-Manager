@@ -4,90 +4,75 @@ const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
 
 // 定义接口结构
-const interfaceSchema = new mongoose.Schema({
-  // 接口名字
+const interfaceStruct = new mongoose.Schema({
   name: {
     type: String,
     required: true,
     minlength: 1,
     maxlength: 100,
   },
-  // 接口描述
   description: {
     type: String,
     maxlength: 3000,
     select: false,
   },
-  // 接口标签
   tag: {
     type: String,
     maxlength: 40,
   },
-  // 请求方法
   requestMethod: {
     type: String,
     required: true,
     enums: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     default: "GET",
   },
-  // 请求路径
   requestPath: {
     type: String,
     required: true,
     minlength: 1,
     maxlength: 100,
   },
-  // 请求头
   requestHeaders: {
     type: String,
     maxlength: 5000,
     select: false,
   },
-  // 请求参数
   requestParams: {
     type: String,
     maxlength: 5000,
     select: false,
   },
-  // 请求体
   requestBody: {
     type: String,
     maxlength: 5000,
     select: false,
   },
-  // 响应体
   response: {
     type: String,
     maxlength: 5000,
     select: false,
   },
-  // 项目id
   projectId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Project",
     required: true,
   },
-  // 历史版本
   history: {
     type: [
       {
-        // 版本号
         version: {
           type: Number,
           required: true,
         },
-        // 更新时间
         updatedAt: {
           type: Date,
           default: Date.now,
         },
-        // 更新人
         updatedBy: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
           required: true,
         },
-        // 更新内容
         data: {
           type: String,
           required: true,
@@ -97,17 +82,14 @@ const interfaceSchema = new mongoose.Schema({
     default: [],
     select: false,
   },
-  // 隐藏版本信息
   __v: {
     type: Number,
     select: false,
   },
 });
 
-// 创建Model
-const Interface = mongoose.model("Interface", interfaceSchema);
+const Interface = mongoose.model("Interface", interfaceStruct);
 
-// 创建接口规则
 function interfaceValidator(data) {
   const schema = Joi.object({
     name: Joi.string().min(1).max(100).required().messages({
@@ -163,7 +145,6 @@ function interfaceValidator(data) {
   return schema.validate(data);
 }
 
-// 批量创建接口规则
 function interfaceBatchValidator(data) {
   const schema = Joi.object({
     type: Joi.string().valid("append", "overwrite").required().messages({

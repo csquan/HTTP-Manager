@@ -1,4 +1,3 @@
-// 引入配置文件
 const config = require("../config");
 const jwt = require("jsonwebtoken");
 
@@ -8,21 +7,18 @@ const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
 
 // 定义user结构
-const userSchema = new mongoose.Schema({
-  // 邮箱
+const userStruct = new mongoose.Schema({
   email: {
     type: String,
     required: true,
     unique: true,
   },
-  // 用户名
   name: {
     type: String,
     required: true,
     minlength: 2,
     maxlength: 10,
   },
-  // 密码
   password: {
     type: String,
     required: true,
@@ -30,13 +26,11 @@ const userSchema = new mongoose.Schema({
     maxlength: 100,
     select: false,
   },
-  // 个人简介
   bio: {
     type: String,
     maxlength: 100,
     default: "这是一段很神秘的个人简介~",
   },
-  // _v隐藏
   __v: {
     type: Number,
     select: false,
@@ -44,12 +38,11 @@ const userSchema = new mongoose.Schema({
 });
 
 // 生成token
-userSchema.methods.generateToken = function () {
+userStruct.methods.generateToken = function () {
   return jwt.sign({ _id: this._id }, config.secret, { expiresIn: "10d" });
 };
 
-// 创建Model
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userStruct);
 
 // 创建内容校验规则
 function userValidator(data) {

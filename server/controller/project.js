@@ -9,9 +9,9 @@ exports.createProject = async (req, res, next) => {
     let { name } = req.validValue;
     let userId = req.userData._id;
     // 1. 判断项目是否已经存在
-    let project = await Project.findOne({ name, creator: userId });
+    let projectExist = await Project.findOne({ name, creator: userId });
     // 2. 如果项目已经存在，返回错误信息
-    if (project) {
+    if (projectExist) {
       return res.status(400).json({
         code: 400,
         msg: "项目已经存在!",
@@ -20,24 +20,24 @@ exports.createProject = async (req, res, next) => {
     }
     // 3. 如果项目不存在，创建新项目
     // 3.1 创建项目
-    project = await Project.create({
+    projectExist = await projectExist.create({
       ...req.validValue,
       creator: userId,
       members: [userId],
     });
     const userProject = await UserProject.create({
       userId,
-      projectId: project._id,
+      projectId: projectExist._id,
       auth: "admin",
     });
     // 3.2 进行数据存储
-    await project.save();
+    await projectExist.save();
     await userProject.save();
     // 3.3 返回响应
     res.status(200).json({
       code: 200,
       msg: "创建项目成功!",
-      data: project,
+      data: projectExist,
     });
   } catch (err) {
     next(err);

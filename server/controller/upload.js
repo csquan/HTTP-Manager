@@ -1,16 +1,15 @@
 const SwaggerParser = require("swagger-parser");
 const util = require("util");
 
-// 递归提取属性
 function extractProperties(schema) {
   const result = {};
   if (schema.properties) {
     for (const propName in schema.properties) {
       const prop = schema.properties[propName];
-      if (prop.type === "object") {
-        result[propName] = extractProperties(prop);
-      } else if (prop.type === "array") {
+      if (prop.type === "array") {
         result[propName] = [extractProperties(prop.items)];
+      } else if (prop.type === "object") {
+        result[propName] = extractProperties(prop);
       } else {
         result[propName] = "";
       }
@@ -19,7 +18,7 @@ function extractProperties(schema) {
   return result;
 }
 
-// 提取响应体
+// 获取响应
 function extractResponse(response) {
   const result = {
     contentType: "",
@@ -39,7 +38,7 @@ function extractResponse(response) {
   return result;
 }
 
-// 上传并解析文件
+// 上传解析文件
 exports.upload = (req, res, next) => {
   try {
     console.log(req.file);

@@ -6,10 +6,10 @@ exports.createInterface = async (req, res, next) => {
   try {
     let { projectId } = req.validValue;
     let userId = req.userData._id;
-    // 1. 判断项目是否存在
-    let project = await Project.findOne({ _id: projectId });
+    // 1. 项目是否存在
+    let projectExist = await Project.findOne({ _id: projectId });
     // 2. 如果项目不存在，返回错误信息
-    if (!project) {
+    if (!projectExist) {
       return res.status(400).json({
         code: 400,
         msg: "项目不存在!",
@@ -17,27 +17,26 @@ exports.createInterface = async (req, res, next) => {
       });
     }
     // 3. 如果项目存在，创建新接口
-    // 3.1 创建接口
+    // 创建接口
     const interface = await Interface.create({
       ...req.validValue,
       projectId: projectId,
       history: [
         {
           version: 1,
-          updatedAt: Date.now(),
           updatedBy: userId,
+          updatedAt: Date.now(),
           data: JSON.stringify(req.validValue, null, 2),
         },
       ],
     });
-    // 3.2 进行数据存储
+    // 数据存储
     await interface.save();
-    // 存到项目中，项目接口数量加1
+
     await Project.findByIdAndUpdate(projectId, {
       interfaceCount: project.interfaceCount + 1,
       $push: { interfaces: interface._id },
     });
-    // 项目接口数量加1
 
     // 3.3 返回响应
     res.status(200).json({
