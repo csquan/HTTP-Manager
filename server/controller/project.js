@@ -3,7 +3,6 @@ const { UserProject } = require("../model/user-project");
 const { Interface } = require("../model/interface");
 const { User } = require("../model/user");
 
-// 创建项目
 exports.createProject = async (req, res, next) => {
   try {
     let { name } = req.validValue;
@@ -18,8 +17,6 @@ exports.createProject = async (req, res, next) => {
         data: { name },
       });
     }
-    // 3. 如果项目不存在，创建新项目
-    // 3.1 创建项目
     projectExist = await projectExist.create({
       ...req.validValue,
       creator: userId,
@@ -30,13 +27,12 @@ exports.createProject = async (req, res, next) => {
       projectId: projectExist._id,
       auth: "admin",
     });
-    // 3.2 进行数据存储
     await projectExist.save();
     await userProject.save();
-    // 3.3 返回响应
+
     res.status(200).json({
-      code: 200,
       msg: "创建项目成功!",
+      code: 200,
       data: projectExist,
     });
   } catch (err) {
@@ -51,13 +47,13 @@ exports.getProjects = async (req, res, next) => {
     let projects = await Project.find({ members: userId }).populate("creator");
     if (!projects) {
       return res.status(400).json({
-        code: 400,
         msg: "查找失败",
+        code: 400,
       });
     }
     res.status(200).json({
-      code: 200,
       msg: "获取项目成功!",
+      code: 200,
       data: projects,
     });
   } catch (err) {
@@ -78,9 +74,9 @@ exports.getProject = async (req, res, next) => {
         msg: "项目不存在!",
       });
     }
-    // 查找用户权限
+
     let members = project.members;
-    // 临时存储用户权限
+
     let tmp = [];
     for (let i = 0; i < members.length; i++) {
       let member = { ...members[i]._doc };

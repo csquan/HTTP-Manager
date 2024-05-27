@@ -59,7 +59,7 @@ exports.upload = (req, res, next) => {
             }
             const requestMethod = method.toUpperCase();
             const requestPath = path;
-            // 处理请求头
+
             const requestHeaders = operation.parameters
               .filter((param) => param.in === "header")
               .map(({ name, description, required, example, schema }) => ({
@@ -69,7 +69,7 @@ exports.upload = (req, res, next) => {
                 example,
                 type: schema.type,
               }));
-            // 处理请求参数
+
             const requestParams = operation.parameters
               .map(
                 ({

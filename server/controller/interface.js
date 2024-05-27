@@ -5,32 +5,32 @@ const { Project } = require("../model/project");
 exports.createInterface = async (req, res, next) => {
   try {
     let { projectId } = req.validValue;
-    let userId = req.userData._id;
-    // 1. 项目是否存在
+    let userid = req.userData._id;
+
     let projectExist = await Project.findOne({ _id: projectId });
-    // 2. 如果项目不存在，返回错误信息
+
     if (!projectExist) {
       return res.status(400).json({
-        code: 400,
         msg: "项目不存在!",
+        code: 400,
         data: { projectId },
       });
     }
     // 3. 如果项目存在，创建新接口
-    // 创建接口
+
     const interface = await Interface.create({
       ...req.validValue,
       projectId: projectId,
       history: [
         {
           version: 1,
-          updatedBy: userId,
+          updatedBy: userid,
           updatedAt: Date.now(),
           data: JSON.stringify(req.validValue, null, 2),
         },
       ],
     });
-    // 数据存储
+    //持久化
     await interface.save();
 
     await Project.findByIdAndUpdate(projectId, {
@@ -38,10 +38,9 @@ exports.createInterface = async (req, res, next) => {
       $push: { interfaces: interface._id },
     });
 
-    // 3.3 返回响应
     res.status(200).json({
-      code: 200,
       msg: "创建接口成功!",
+      code: 200,
       data: interface,
     });
   } catch (err) {
@@ -52,7 +51,7 @@ exports.createInterface = async (req, res, next) => {
 // 批量创建接口
 exports.batchCreateInterface = async (req, res, next) => {
   try {
-    let { type, datas, projectId } = req.body;
+    let { type, dataCollection, projectId } = req.body;
     let userId = req.userData._id;
     // 1. 判断项目是否存在
     let project = await Project.findOne({ _id: projectId });
@@ -85,14 +84,14 @@ exports.batchCreateInterface = async (req, res, next) => {
     }
     // 批量创建接口
     let interfaces = [];
-    for (let i = 0; i < datas.length; i++) {
-      let data = datas[i];
+    for (let i = 0; i < dataCollection.length; i++) {
+      let data = dataCollection[i];
       data.requestHeaders = JSON.stringify(data.requestHeaders, null, 2);
       data.requestParams = JSON.stringify(data.requestParams, null, 2);
       data.requestBody = JSON.stringify(data.requestBody, null, 2);
       data.response = JSON.stringify(data.response, null, 2);
       data.projectId = projectId;
-      let interface = await Interface.create({
+      let interfaceNew = await Interface.create({
         ...data,
         history: [
           {
@@ -103,7 +102,7 @@ exports.batchCreateInterface = async (req, res, next) => {
           },
         ],
       });
-      interfaces.push(interface);
+      interfaces.push(interfaceNew);
     }
     // 存到项目中，项目接口数量加interfaces.length
     await Project.findByIdAndUpdate(projectId, {
@@ -130,8 +129,8 @@ exports.getInterfaces = async (req, res, next) => {
     // 2. 如果项目不存在，返回错误信息
     if (!project) {
       return res.status(400).json({
-        code: 400,
         msg: "项目不存在!",
+        code: 400,
         data: { projectId },
       });
     }
@@ -145,7 +144,7 @@ exports.getInterfaces = async (req, res, next) => {
         tags.push(item.tag);
       }
     });
-    // 3.2 返回响应
+
     res.status(200).json({
       code: 200,
       msg: "获取接口成功!",
@@ -305,30 +304,29 @@ exports.rollbackInterface = async (req, res, next) => {
   try {
     let { interfaceId, historyId } = req.params;
     let userId = req.userData._id;
-    // 1. 判断接口是否存在
-    let interface = await Interface.findOne({ _id: interfaceId }).select(
+
+    let interfaceFind = await Interface.findOne({ _id: interfaceId }).select(
       "history"
     );
-    // 2. 如果接口不存在，返回错误信息
-    if (!interface) {
+    if (!interfaceFind) {
       return res.status(400).json({
-        code: 400,
         msg: "接口不存在!",
+        code: 400,
         data: { interfaceId },
       });
     }
-    // 3. 判断历史版本是否存在
-    let history = interface.history.find((h) => h._id.toString() === historyId);
-    // 4. 如果历史版本不存在，返回错误信息
+
+    let history = interfaceFind.history.find((h) => h._id.toString() === historyId);
+
     if (!history) {
       return res.status(400).json({
-        code: 400,
         msg: "历史版本不存在!",
+        code: 400,
         data: { historyId },
       });
     }
-    // 5. 如果历史版本存在，回滚接口
-    // 5.1 回滚接口
+
+
     const data = JSON.parse(history.data);
     let historyVersion = {
       version: interface.history ? interface.history.length + 1 : 0,
@@ -336,19 +334,19 @@ exports.rollbackInterface = async (req, res, next) => {
       updatedBy: userId,
       data: history.data,
     };
-    // 5.2 更新接口
-    interface = await Interface.findByIdAndUpdate(
+
+    interfaceUpdate = await Interface.findByIdAndUpdate(
       interfaceId,
       { $push: { history: historyVersion }, ...data },
       { new: true }
     ).select(
       "+description +requestHeaders +requestParams +requestBody +response +history"
     );
-    // 5.2 返回响应
+
     res.status(200).json({
-      code: 200,
       msg: "回滚接口成功!",
-      data: interface,
+      code: 200,
+      data: interfaceUpdate,
     });
   } catch (err) {
     next(err);
