@@ -49,8 +49,10 @@ exports.createInterface = async (req, res, next) => {
 
 // 批量创建接口
 exports.batchCreateInterface = async (req, res, next) => {
+  console.log(req.body)
   try {
-    let { type, dataCollection, projectId } = req.body;
+    let { type, datas, projectId } = req.body;
+    console.log(datas)
     let userId = req.userData._id;
     // 1. 判断项目是否存在
     let project = await Project.findOne({ _id: projectId });
@@ -83,8 +85,8 @@ exports.batchCreateInterface = async (req, res, next) => {
     }
     // 批量创建接口
     let interfaces = [];
-    for (let i = 0; i < dataCollection.length; i++) {
-      let data = dataCollection[i];
+    for (let i = 0; i < datas.length; i++) {
+      let data = datas[i];
       data.requestHeaders = JSON.stringify(data.requestHeaders, null, 2);
       data.requestParams = JSON.stringify(data.requestParams, null, 2);
       data.requestBody = JSON.stringify(data.requestBody, null, 2);
