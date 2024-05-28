@@ -68,6 +68,12 @@ exports.upload = (req, res, next) => {
             }
             const requestMethod = method.toUpperCase();
             const requestPath = path;
+            console.log(operation)
+            console.log(operation.parameters)
+
+            if (operation.parameters === null)
+              console.log("continue****************")
+              continue
             const requestHeaders = operation.parameters
               .filter((param) => param.in === "header")
               .map(({ name, description, required, example, schema }) => ({

@@ -17,7 +17,7 @@ exports.createProject = async (req, res, next) => {
         data: { name },
       });
     }
-    projectExist = await projectExist.create({
+    projectExist = await Project.create({
       ...req.validValue,
       creator: userId,
       members: [userId],
