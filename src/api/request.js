@@ -2,10 +2,8 @@ import axios from "axios";
 import { ElMessage } from "element-plus";
 import router from "../router";
 
-//1. 创建axios对象
 const service = axios.create();
 
-//2. 请求拦截器
 service.interceptors.request.use(
   (config) => {
     return config;
@@ -15,7 +13,6 @@ service.interceptors.request.use(
   }
 );
 
-//3. 响应拦截器
 service.interceptors.response.use(
   (response) => {
     //判断code码
@@ -41,7 +38,6 @@ service.interceptors.response.use(
   }
 );
 
-// 从localStorage中获取token
 service.defaults.headers.common["Authorization"] =
   localStorage.getItem("token");
 

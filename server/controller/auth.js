@@ -7,18 +7,18 @@ exports.login = async (req, res, next) => {
     // 获取到校验后的数据
     const value = req.validValue;
 
-    let user = await User.findOne({ email: value.email }).select(
+    let userTarget = await User.findOne({ email: value.email }).select(
       "+password"
     );
 
-    if (!user) {
+    if (!userTarget) {
       return res.status(400).json({
         code: 400,
         msg: "用户名或密码错误!",
       });
     }
 
-    const Valid = await bcrypt.compare(value.password, user.password);
+    const Valid = await bcrypt.compare(value.password, userTarget.password);
 
     if (!Valid) {
       return res.status(400).json({
@@ -31,9 +31,9 @@ exports.login = async (req, res, next) => {
       msg: "登录成功!",
       code: 200,
       data: {
-        id: user._id,
-        name: user.name,
-        token: user.generateToken(),
+        id: userTarget._id,
+        name: userTarget.name,
+        token: userTarget.generateToken(),
       },
     });
   } catch (err) {

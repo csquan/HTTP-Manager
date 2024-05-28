@@ -4,8 +4,8 @@ module.exports = (validator) => {
     if (error) {
       return res.status(400).json({
         value: error._original,
-        code: 400,
         msg: error.details[0].message,
+        code: 400,
       });
     }
     req.validValue = value;

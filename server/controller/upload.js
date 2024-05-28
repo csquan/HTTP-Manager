@@ -18,7 +18,6 @@ function extractProperties(schema) {
   return result;
 }
 
-// 获取响应
 function extractResponse(response) {
   const result = {
     contentType: "",
@@ -48,7 +47,7 @@ function extractResponse(response) {
   return result;
 }
 
-// 上传解析文件
+// upload and parse file
 exports.upload = (req, res, next) => {
   try {
     console.log(req.file);
@@ -112,17 +111,14 @@ exports.upload = (req, res, next) => {
                 { path: [], query: [] }
               );
 
-            // 处理请求体
             let requestBody = { contentType: "", content: [] };
             if (operation.requestBody && operation.requestBody.content) {
               const contentType = Object.keys(operation.requestBody.content)[0];
               const schema = operation.requestBody.content[contentType].schema;
-              // 处理application/json
               if (contentType === "application/json") {
                 requestBody.contentType = contentType;
                 requestBody.content.push(extractProperties(schema));
               }
-              // 处理multipart/form-data和application/x-www-form-urlencoded
               else if (
                 contentType === "multipart/form-data" ||
                 contentType === "application/x-www-form-urlencoded"
@@ -143,7 +139,6 @@ exports.upload = (req, res, next) => {
                   })),
                 };
               }
-              // 处理text/plain
               else if (contentType === "text/plain") {
                 requestBody.contentType = contentType;
                 requestBody.content.push({
@@ -156,9 +151,7 @@ exports.upload = (req, res, next) => {
                 });
               }
             }
-            // 处理响应体
             const response = extractResponse(operation.responses);
-            // 将接口信息添加到数组中
             swagger.push({
               name,
               description,
@@ -174,17 +167,16 @@ exports.upload = (req, res, next) => {
         }
         //console.log(util.inspect(swagger, false, null, true));
         res.status(200).json({
-          code: 200,
           msg: "解析文件成功!",
+          code: 200,
           data: swagger,
         });
       })
       .catch((err) => {
-        // 处理错误
         console.error(err);
         res.status(400).json({
-          code: 400,
           msg: "解析文件失败!",
+          code: 400,
         });
       });
   } catch (err) {

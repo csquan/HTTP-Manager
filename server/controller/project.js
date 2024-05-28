@@ -22,13 +22,13 @@ exports.createProject = async (req, res, next) => {
       creator: userId,
       members: [userId],
     });
-    const userProject = await UserProject.create({
+    const userProjectNew = await UserProject.create({
       userId,
       projectId: projectExist._id,
       auth: "admin",
     });
     await projectExist.save();
-    await userProject.save();
+    await userProjectNew.save();
 
     res.status(200).json({
       msg: "创建项目成功!",

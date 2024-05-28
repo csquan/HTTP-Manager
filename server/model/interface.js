@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
-// 引入Joi
+
 const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
 
-// 定义接口结构
+
 const interfaceStruct = new mongoose.Schema({
   name: {
     type: String,

@@ -6,7 +6,6 @@ const mongoose = require("mongoose");
 const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
 
-// 定义user结构
 const userStruct = new mongoose.Schema({
   email: {
     type: String,
@@ -37,14 +36,12 @@ const userStruct = new mongoose.Schema({
   },
 });
 
-// 生成token
 userStruct.methods.generateToken = function () {
   return jwt.sign({ _id: this._id }, config.secret, { expiresIn: "10d" });
 };
 
 const User = mongoose.model("User", userStruct);
 
-// 创建内容校验规则
 function userValidator(data) {
   const schema = Joi.object({
     email: Joi.string()
@@ -85,7 +82,6 @@ function userValidator(data) {
   return schema.validate(data);
 }
 
-// 登录校验规则
 function userLoginValidator(data) {
   const schema = Joi.object({
     email: Joi.string()

@@ -1,6 +1,5 @@
 import request from "./request";
 
-// 创建项目
 export function createProject(data) {
   return request({
     url: "/api/project",
@@ -9,7 +8,6 @@ export function createProject(data) {
   });
 }
 
-// 获取该用户的所有项目
 export function getProjects() {
   return request({
     url: "/api/project",
@@ -17,7 +15,7 @@ export function getProjects() {
   });
 }
 
-// 获取指定项目
+
 export function getProject(projectId) {
   return request({
     url: `/api/project/${projectId}`,
@@ -25,7 +23,6 @@ export function getProject(projectId) {
   });
 }
 
-// 修改指定项目
 export function updateProject(projectId, data) {
   return request({
     url: `/api/project/${projectId}`,
@@ -34,7 +31,6 @@ export function updateProject(projectId, data) {
   });
 }
 
-// 删除指定项目
 export function deleteProject(projectId) {
   return request({
     url: `/api/project/${projectId}`,
@@ -42,7 +38,6 @@ export function deleteProject(projectId) {
   });
 }
 
-// 项目添加成员
 export function addMember(data) {
   return request({
     url: "/api/project/member",
@@ -51,7 +46,6 @@ export function addMember(data) {
   });
 }
 
-// 项目更改用户权限
 export function updateMember(data) {
   return request({
     url: "/api/project/member",
@@ -60,7 +54,6 @@ export function updateMember(data) {
   });
 }
 
-// 项目删除成员
 export function deleteMember(data) {
   return request({
     url: "/api/project/member/del",

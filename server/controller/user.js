@@ -39,12 +39,11 @@ exports.register = async (req, res, next) => {
   }
 };
 
-// 查询指定用户
 exports.getUser = async (req, res, next) => {
   try {
-    let userId = req.params.id;
-    let user = await User.findById(userId);
-    if (!user) {
+    let paramId = req.params.id;
+    let userTarget = await User.findById(paramId);
+    if (!userTarget) {
       return res.status(400).json({
         code: 400,
         msg: "用户不存在!",
@@ -53,25 +52,24 @@ exports.getUser = async (req, res, next) => {
     res.status(200).json({
       code: 200,
       msg: "查询用户成功!",
-      data: user,
+      data: userTarget,
     });
   } catch (err) {
     next(err);
   }
 };
 
-// 修改指定用户
 exports.updateUser = async (req, res, next) => {
   try {
     let body = req.body;
-    let id = req.params.id;
+    let paramId = req.params.id;
 
     const salt = await bcrypt.genSalt(10);
     body.password = await bcrypt.hash(body.password, salt);
 
-    const data = await User.findByIdAndUpdate(id, body);
+    const dataTarget = await User.findByIdAndUpdate(paramId, body);
 
-    if (!data) {
+    if (!dataTarget) {
       return res.status(400).json({
         msg: "用户不存在!",
         code: 400,
@@ -88,29 +86,28 @@ exports.updateUser = async (req, res, next) => {
   }
 };
 
-// 删除用户
 exports.deleteUser = async (req, res, next) => {
   try {
-    let id = req.params.id;
-    // 格式校验
-    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    let paramId = req.params.id;
+
+    if (!paramId.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({
-        msg: "用户id格式不正确!",
+        msg: "用户 id 不符合格式!",
         code: 400,
         value: {
-          _id: id,
+          _id: paramId,
         },
       });
     }
 
-    const user = await User.findByIdAndDelete(id);
+    const user = await User.findByIdAndDelete(paramId);
 
     if (!user) {
       return res.status(400).json({
         msg: "用户不存在!",
         code: 400,
         value: {
-          _id: id,
+          _id: paramId,
         },
       });
     }

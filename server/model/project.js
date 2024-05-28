@@ -57,7 +57,7 @@ const interfaceStruct = new mongoose.Schema({
 
 const Project = mongoose.model("Project", interfaceStruct);
 
-// 创建校验规则
+
 function projectValidator(data) {
   const schema = Joi.object({
     name: Joi.string().trim().min(2).max(15).required().messages({

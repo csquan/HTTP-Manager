@@ -1,7 +1,6 @@
 const { Interface } = require("../model/interface");
 const { Project } = require("../model/project");
 
-// 创建接口
 exports.createInterface = async (req, res, next) => {
   try {
     let { projectId } = req.validValue;
