@@ -24,10 +24,20 @@ function extractResponse(response) {
     contentType: "",
     content: [],
   };
+
+  console.log(response)
   for (const statusCode in response) {
     const content = response[statusCode].content;
+    if(content == null)
+    return result
+
     const contentType = Object.keys(content)[0];
     const schema = content[contentType].schema;
+
+    if(schema == null)
+      return result
+    console.log(schema)
+
     const extractedData = extractProperties(schema);
     result.contentType = contentType;
     result.content.push({
@@ -59,7 +69,6 @@ exports.upload = (req, res, next) => {
             }
             const requestMethod = method.toUpperCase();
             const requestPath = path;
-
             const requestHeaders = operation.parameters
               .filter((param) => param.in === "header")
               .map(({ name, description, required, example, schema }) => ({
